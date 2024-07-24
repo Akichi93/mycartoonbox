@@ -1,0 +1,253 @@
+{% extends "layouts.admin.app" %}
+
+
+{% block content %}
+
+	<!-- Content Wrapper. Contains page content -->
+	<div
+		class="content-wrapper">
+
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1>Services</h1>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item">
+								<a href="#">Accueil</a>
+							</li>
+							<li class="breadcrumb-item active">Services</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+
+
+		<hr/>
+
+		<!-- Main content -->
+		<!-- Main content -->
+			<section class="content"> <div class="container-fluid">
+				<div
+					class="row">
+					<!-- left column -->
+					<div
+						class="col-md-12">
+						<!-- general form elements -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h3 class="card-title">{{ title }}</h3>
+							</div>
+							<!-- /.card-header -->
+
+							{% if errors.any() %}
+								<div class="alert alert-danger">
+									<ul>
+										{% for error in errors.all() %}
+											<li>{{ error }}</li>
+										{% endfor %}
+									</ul>
+								</div>
+							{% endif %}
+
+
+							<!-- form start -->
+							<form {% if servicedata['id'] is empty %} action="{{ url('add-edit-service') }}" {% else %} action="{{ url('add-edit-service' , servicedata['id']) }}" {% endif %} method="POST" enctype="multipart/form-data">
+								{{csrf_field()}}
+
+								<div class="card-body">
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Partenaire</label>
+												<select
+													name="partenaire_id" id="partenaire_id" class="single-select form-control" style="width: 100%;">
+													{# <option value="">Selectionnez un partenaire</option> #}
+													{% for partenaire in getPartenaires %}
+
+														<option value="{{ partenaire['id'] }}" {% if partenaire['id'] == servicedata['partenaire_id'] %} selected {% endif %}>
+															{{ partenaire['nom_partenaire'] }}
+														</option>
+
+													{% endfor %}
+												</select>
+												<p style="color: red">
+													{{ errors.first('partenaire_id') }}
+												</p>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Catégorie</label>
+												<select
+													name="categorie_id" id="categorie_id" class="single-select form-control" style="width: 100%;">
+													{# <option value="">Selectionnez une catégorie</option> #}
+													{% for categorie in getCategories %}
+
+														<option value="{{ categorie['id'] }}" {% if categorie['id'] == servicedata['categorie_id'] %} selected {% endif %}>
+															{{ categorie['nom_categorie'] }}
+														</option>
+
+													{% endfor %}
+
+
+												</select>
+												<p style="color: red">
+													{{ errors.first('categorie_id') }}
+												</p>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Nom de la chaine</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'email du correspondant" name="nom_service" {% if servicedata['nom_service'] is not empty %} value="{{ servicedata['nom_service'] }}" {% else %} value="{{ old('nom_service ') }}" {% endif %}>
+												<p style="color: red">
+													{{ errors.first('nom_service') }}
+												</p>
+											</div>
+										</div>
+
+										<div
+											class="col-md-6">
+											{# {% if servicedata.image is not empty %}
+																							<label for="exampleInputEmail1">Images</label>
+																							<div class="image-container" style="text-align: right;">
+																								{% for key, image in servicedata['image'] %}
+																									<div class="input-group hdtuto control-group lst increment">
+																										<div class="row col-md-6">
+																											<input type="file" name="filenames[]" class="myfrm form-control">
+																										</div>
+																										<div class="row col-md-6">
+																											<div class="image-container">
+																												<img style="width: 100px; margin-top: 15px; display: inline-block;" src="{{ asset('image/service_images/' ~ image) }}" alt="" data-file="{{ image }}" data-size="YOUR_FILE_SIZE_HERE" data-type="YOUR_FILE_TYPE_HERE">
+																											</div>
+																											
+																										</div>
+																									</div>
+																								{% endfor %}
+											
+																							</div>
+																						{% else %} #}
+											{% if servicedata.image is empty %}
+												<label for="exampleInputEmail1">Images</label>
+												<div class="input-group hdtuto control-group lst increment">
+													<input type="file" name="filenames[]" class="myfrm form-control">
+													<div class="input-group-btn">
+														<button class="btn btn-success" type="button">
+															<i class="fldemo glyphicon glyphicon-plus"></i>Ajouter
+														</button>
+													</div>
+												</div>
+											{% endif %}
+
+
+										</div>
+										{# <>{# <div class="col-md-3"> #}
+
+									</div>
+
+
+									{# <div>
+																																																																																																																																																																																																											{% if servicedata.image is not empty %}
+																																																																																																																																																																																																												<div class="image-container" style="text-align: right;margin-left: 350px">
+																																																																																																																																																																																																													{% for image in servicedata['image'] %}
+																																																																																																																																																																																																														<div style="display: inline-block; margin-right: 153px; text-align: center;">
+																																																																																																																																																																																																															<div>
+																																																																																																																																																																																																																<img style="width: 130px; margin-top: 15px;" src="{{ asset('image/service_images/' ~ image) }}" alt="">
+																																																																																																																																																																																																															</div>
+																																																																																																																																																																																																															<div>
+																																																																																																																																																																																																																<a class="confirmDelete text-danger" href="javascript:void(0)" record="banner-image" categoryname="{{ image }}" recordid="{{ image }}">Supprimer l'image</a>
+																																																																																																																																																																																																															</div>
+																																																																																																																																																																																																														</div>
+																																																																																																																																																																																																													{% endfor %}
+																																																																																																																																																																																																												</div>
+																																																																																																																																																																																																												
+																																																																																																																																																																																																											{% endif %}
+																																																																																																																																																																																																										</div> #}
+
+
+								
+
+									
+
+								
+									<div class="row">
+										
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Logo</label>
+												<input type="file" class="form-control" id="file" name="icone">
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Prix</label>
+												<input type="number" class="form-control" id="exampleInputEmail1" placeholder="Entrez le montant" name="price" {% if servicedata['nom_service'] is not empty %} value="{{ servicedata['nom_service'] }}" {% else %} value="{{ old('nom_service ') }}" {% endif %}>
+											</div>
+										</div>
+
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Lien de la vidéo</label>
+												<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Entrez l'url de de la vidéo" name="link" {% if servicedata['link'] is not empty %} value="{{ servicedata['link'] }}" {% else %} value="{{ old('url_consultation') }}" {% endif %}>
+											</div>
+										</div>
+
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="exampleInputEmail1">Description</label>
+												<textarea class="form-control" name="description" rows="3" placeholder="Entrez la description ...">{{ servicedata['description'] }}</textarea>
+											</div>
+										</div>
+
+									</div>
+
+
+
+
+								</div>
+								<!-- /.card-body -->
+
+								<div class="card-footer">
+									<button type="submit" class="btn btn-primary">{{ title}}</button>
+								</div>
+							</form>
+						</div>
+						<!-- /.card -->
+
+						<!-- general form elements -->
+
+
+					</div>
+					<!--/.col (left) -->
+
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</section>
+		<!-- /.content -->
+		<!-- /.container-fluid -->
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->{% endblock %}
